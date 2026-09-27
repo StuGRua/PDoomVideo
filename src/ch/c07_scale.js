@@ -26,6 +26,7 @@
 
   // The super-dense cube: Clawd crushed to a glowing square, centred at (x, cy) with side L, rotated by rot.
   function cube(x, cy, L, rot, o = {}) {
+    if(window.WHALE_FULL)return window.whaleFull.cube(x,cy,L,rot,o);
     const u = L / 6, heat = o.heat ?? 1;
     paint(ellPts(x, cy, L * 1.25, L * 1.25, 20), { fill: GOLD, fillOp: 80 * heat, bleed: .35, tex: .2, border: .1, ink: null });
     paint(ellPts(x, cy, L * .85, L * .85, 18), { fill: SO_LT, fillOp: 70 * heat, bleed: .3, tex: .2, border: .1, ink: null });

@@ -247,14 +247,14 @@
     [[260, 0], [700, .5], [1300, .5], [1740, 0]].forEach(([x, ph], i) => pyro(x, 804, 600 * jetEnv(t, ph), t, 58, i));
     const GY = 910, PS = 1.2, v = pdoomAt(t);
     meterProp(205, GY, 1.2, v, { glow: .2 + .8 * hit });
-    pumpProp(470, GY, PS, h, [205, GY - 110]);
-    pumpProp(1530, GY, PS, h, [260, GY - 100]);
+    pumpProp(window.WHALE_FULL?840:470, GY, PS, h, [205, GY - 110]);
+    pumpProp(window.WHALE_FULL?1160:1530, GY, PS, h, [260, GY - 100]);
     // Clawd's hands ride the pump handles
     const U = 80, dy = -h * .25, sq = (1 - h) * .07;
     const handleY = GY - (257 + 150 * h) * PS, pivY = GY + dy * U - 4.5 * U * (1 - sq);
     const aa = Math.asin(clamp((pivY - handleY) / (2.2 * U), -1, 1));
     const md = mood(t, [[59, 'happy'], [59.95, 'spark', 'spark']]);
-    clawd(1000, GY, U, { dy, sq, aL: aa, aR: aa, mouth: 'grin', blush: true, ...md, take: md.take * .6 });
+    clawd(1000, GY, U, { whaleHands:[[840,handleY],[1160,handleY]], dy, sq, aL: aa, aR: aa, mouth: 'grin', blush: true, ...md, take: md.take * .6 });
     // for scale: the tiny Researcher cheering at Clawd's feet
     researcherDancer(1255, GY - 40, 8.5, 'hop', t, { eyes: 'star', mouth: 'grin', aL: 1.2 + .3 * hit, aR: 1.2 + .3 * hit, noShadow: true });
     // big foreground jets at the stage lip

@@ -1,0 +1,12 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>鲸鱼娘 · 中文注释工作室</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Shantell+Sans:wght@800&display=block">
+<style>body{margin:0;background:#202234;color:#eee;font:15px/1.6 system-ui,sans-serif}main{max-width:1400px;margin:auto;padding:20px}h1{font-size:23px;margin:0 0 8px}p{color:#b9c0d9}#out{width:100%;height:auto;background:#F3EBDC}.p5Canvas{display:none!important}.bar{display:flex;gap:16px;align-items:center;margin-top:16px;flex-wrap:wrap}#scrub{flex:1;min-width:220px}select{padding:9px;font:inherit}a{color:#b9d4ff}#tt{min-width:170px}</style>
+<script src="node_modules/p5/lib/p5.min.js"></script><script src="node_modules/p5.brush/dist/p5.brush.js"></script></head>
+<body><main><h1>鲸鱼娘 · 中文注释工作室</h1><p>九章完整改编与名词注释预览。选择章节或拖动时间查看；成片见下方链接。</p><canvas id="out" width="1920" height="1080"></canvas>
+<div class="bar"><select id="shot" aria-label="选择检查镜头"><option value="close">屏幕近景</option><option value="chair">老板椅与持杯</option><option value="run">跑步机</option><option value="sax">萨克斯演奏</option></select><input id="scrub" type="range" min="3.62" max="5.6" step="0.041667" value="3.62" aria-label="原片时间"><output id="tt">加载中…</output></div>
+<p>使用 npm run render 导出正片，产物位于 out/video/；操作说明见 README.md。</p></main>
+<script src="src/core.js"></script><script src="src/clawd.js"></script><script src="src/cast.js"></script><script src="src/props.js"></script><script src="src/lyrics.js"></script><script src="src/timeline.js"></script>
+<script>const CAST={};</script>
+<script src="src/ch/c01_lab.js"></script><script src="src/ch/c02_chorus1.js"></script><script src="src/ch/c03_takeoff.js"></script><script src="src/ch/c04_chorus2.js"></script><script src="src/ch/c05_obsolete.js"></script><script src="src/ch/c06_chorus3.js"></script><script src="src/ch/c07_scale.js"></script><script src="src/ch/c08_chorus4.js"></script><script src="src/ch/c09_finale.js"></script>
+<script>window.WHALE_FULL=true;</script><script src="src/whale-check.js"></script><script src="src/whale-full.js"></script>
+<script src="src/whale-lyrics-zh.js"></script><script src="src/whale-fonts.js"></script><script src="src/whale-localization.js"></script><script src="src/whale-terms.js"></script><script src="src/whale-annotations.js"></script></body></html>

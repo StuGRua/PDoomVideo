@@ -336,7 +336,7 @@
     if (back > 0) { const b = elasticOut(back); ext = full * (1 - b); aR = lerp(aimA, -.35, b); }
     const proud = t > DRAW1 + .08;
     const bm = mood(t, [[128, 'normal'], [HAND, 'normal', '!'], [DRAW1 + .08, 'normal', 'spark']]);
-    clawd(KX, KY, KU, { ...bm, eyes: 'normal', hat: 'masq', blush: true, noLegs: true, noShadow: true, col: BABY.col, dk: BABY.dk, lt: BABY.lt, sx: 1.04, sy: .94,
+    clawd(KX, KY, KU, { whaleSkipHooks:true,whaleChalk:t>=DRAW0&&t<DRAW1+.1?tip:null, ...bm, eyes: 'normal', hat: 'masq', blush: true, noLegs: true, noShadow: true, col: BABY.col, dk: BABY.dk, lt: BABY.lt, sx: 1.04, sy: .94,
       mouth: proud ? 'grin' : t > HAND ? 'O' : 'o', dy: proud ? -.4 - .5 * pulse(t, 6) : -.25 * Math.abs(Math.sin(bpOf(t) * Math.PI)), aL: proud ? -.45 : .15, aR,
       draw: (u, sw) => {
         inkLine([[0, -8 * u], [.35 * u, -8.9 * u], [-.1 * u, -9.6 * u], [-.6 * u, -9.1 * u], [-.3 * u, -8.6 * u]], sw * .9, SEP.ink, 'ink', .6);   // baby curl
@@ -444,7 +444,7 @@
       }
       const drop = k > 0 && L.hat ? (1 - backOut(seg(age, .08, .36))) * 7 * u : 0;
       clawd(gx, gy, u, { ...md, sq: settle, mouth: k === 0 ? 'smile' : k === 1 ? 'grin' : 'smile', blush: k !== 1, noShadow: k > 0,
-        hat: k === 0 ? 'party' : null, aR, aL: building ? .5 + .2 * Math.sin(t * 12) : 1.2, armR: building ? hammer : null,
+        whaleHat:k>0&&age>.08?L.hat:null, hat: k === 0 ? 'party' : null, aR, aL: building ? .5 + .2 * Math.sin(t * 12) : 1.2, armR: building ? hammer : null,
         draw: k > 0 && L.hat && age > .08 ? (uu, sw) => { push(); translate(0, -drop); hat(uu, L.hat, sw * (L.hat === 'halo' ? 1.6 : 1)); pop(); } : null });
       if (building && f >= .35 && f < .6) {                                     // BONK stars at the hammer head
         const a = -.4, hx = gx + 4.9 * u + 5.4 * u * Math.cos(a), hy = gy - 4.5 * u - 5.4 * u * Math.sin(a), s = 1.6 * u * (1 - (f - .35) / .25);
@@ -709,7 +709,9 @@
     else {
       cover(DARK);
       if (!blink) {                                                              // eyes in the dark
-        for (const ex of [-3, 2]) paint(rrPts(HCX + ex * 26, HY - 7 * 26 + 2 * 26 - 10, 26, 52, 8), { wash: PAL.cream, washOp: 235, ink: null });
+        if(window.WHALE_FULL){
+          for(const [ex,ey]of window.whaleFull.last.anchors.eyes)paint(ellPts(ex,ey,9,13,18),{wash:PAL.cream,washOp:235,ink:null});
+        }else for (const ex of [-3, 2]) paint(rrPts(HCX + ex * 26, HY - 7 * 26 + 2 * 26 - 10, 26, 52, 8), { wash: PAL.cream, washOp: 235, ink: null });
         for (const s of [-1, 1]) { paint(ellPts(HRX + s * 24, HY - 4 + 1.1 * 24 - 10.55 * 24, 19, 19, 16), { ink: PAL.cream, sw: 1 }); disc(HRX + s * 24, HY - 4 + 1.1 * 24 - 10.55 * 24, 5, PAL.cream, 240, 8); }
       }
     }
@@ -727,6 +729,7 @@
   ];
   // one half of the costume, hinged at its outer edge; sxh = cos(swing) squeezes it toward the hinge
   function costumeHalf(side, sxh) {
+    if(window.WHALE_FULL)return window.whaleFull.costume(side,sxh,CX,CY,CU);
     const u = CU, x = CX, y = CY, sw = 1.6, px = x + side * 5 * u;
     push(); translate(px, y); scale(sxh, 1); translate(-px, -y);
     for (const lx of side < 0 ? [-4, -2] : [1, 3]) paint(rectPts(x + lx * u, y - 2.4 * u, u, 2.3 * u, 1.5), { wash: PAL.clayDk, ink: PAL.ink, sw: sw * .8 });
@@ -767,6 +770,7 @@
     }
     // the three little Clawds who were inside the giant (hidden behind the door until it rolls away)
     const smalls = out => SMALL.forEach((c, i) => {
+      if(window.WHALE_FULL&&t<c.t0)return;
       if ((t >= c.t0) !== out) return;
       const k = seg(t, c.t0, c.t1), wob = t > SPLIT && t < c.t0 ? Math.sin((t - SPLIT) * 34 + i * 2) * .14 : 0;
       const x = lerp(c.from[0], c.to[0], k), y = lerp(c.from[1], c.to[1], k) - c.H * 4 * k * (1 - k), land = t > c.t1 ? Math.exp(-(t - c.t1) * 10) : 0;

@@ -518,8 +518,8 @@
   }
   // Clawd's left hand (tip of the left arm) for an unflipped, unrotated Clawd
   const handL = (x, y, u, dy, a) => [x - 4.9 * u - 2.2 * u * Math.cos(a), y + dy * u - 4.5 * u - 2.2 * u * Math.sin(a)];
-  function match(hx, hy, a, u, lit, t) {       // held in the left hand, pointing outward along the arm
-    const d = [-Math.cos(a), -Math.sin(a)], L = 1.5 * u, ex = hx + d[0] * L, ey = hy + d[1] * L, n = [-d[1] * .12 * u, d[0] * .12 * u];
+  function match(hx, hy, a, u, lit, t, length=1.5*u) {       // held in the left hand, pointing outward along the arm
+    const d = [-Math.cos(a), -Math.sin(a)], L = length, ex = hx + d[0] * L, ey = hy + d[1] * L, n = [-d[1] * .12 * u, d[0] * .12 * u];
     paint([[hx + n[0], hy + n[1]], [ex + n[0], ey + n[1]], [ex - n[0], ey - n[1]], [hx - n[0], hy - n[1]]], { wash: '#EBCB8B', ink: PAL.ink, sw: .8 });
     paint(ellPts(ex, ey, .28 * u, .24 * u, 12), { wash: lit > 0 ? '#3A2B2B' : '#C8324A', ink: PAL.ink, sw: .7 });
     if (lit > 0) {
@@ -566,7 +566,10 @@
       clawd(SX(cx), SY(cy), Zu, { noShadow: true, dy: bob, aL, aR, mouth: t < 103.62 ? 'cat' : 'grin', blush: true, ...md });
       const litM = t >= 102.55 ? backOut(seg(t, 102.55, 102.7)) : 0;
       if (t < 103.7) {
-        const [hx, hy] = handL(SX(cx), SY(cy), Zu, bob, aL), [mx2, my2] = match(hx, hy, aL, Zu, litM, t);
+        const oldHand=handL(SX(cx),SY(cy),Zu,bob,aL),tip=[oldHand[0]-Math.cos(aL)*1.5*Zu,oldHand[1]-Math.sin(aL)*1.5*Zu];
+        const [hx,hy]=window.WHALE_FULL?window.whaleFull.last.anchors.hands[0]:oldHand;
+        const ma=window.WHALE_FULL?Math.atan2(hy-tip[1],hx-tip[0]):aL,ml=window.WHALE_FULL?Math.hypot(tip[0]-hx,tip[1]-hy):1.5*Zu;
+        const [mx2,my2]=match(hx,hy,ma,Zu,litM,t,ml);
         if (t > 102.5 && t < 102.66) for (let i = 0; i < 8; i++) { const a = -Math.PI / 2 + (hash(i * 3.3) - .5) * 2.8, d = (40 + hash(i) * 90) * seg(t, 102.5, 102.66) * V.z; paint(starPts(mx2 + Math.cos(a) * d, my2 + Math.sin(a) * d, 12 * V.z * (1 - seg(t, 102.5, 102.66) * .6), .35, 4), { wash: '#FFE08A', ink: null }); }
       }
     }
@@ -618,7 +621,8 @@
     const dx = Math.cos(ang), dy = Math.sin(ang), nx = -dy, ny = dx, ex = sx + dx * len, ey = sy + dy * len;
     paint([[sx + nx * w0, sy + ny * w0], [ex + nx * w1, ey + ny * w1], [ex - nx * w1, ey - ny * w1], [sx - nx * w0, sy - ny * w0]], flat ? { wash: col, washOp: op, ink: null } : { fill: col, fillOp: op, bleed: .06, tex: .25, border: .15, ink: null });
   }
-  function patron(x, y, u, t, seed, hatK) {    // a dark Clawd in the audience, seen from behind, bobbing
+  function patron(x, y, u, t, seed, hatK) {
+    if(window.WHALE_FULL)return window.whaleFull.patron(x,y,u,t,seed);    // a dark Clawd in the audience, seen from behind, bobbing
     const b = Math.abs(Math.sin(bpOf(t) * Math.PI + seed)) * u * .6, c = '#0F1229';
     paint(rrPts(x - 5 * u, y - 6 * u - b, 10 * u, 8 * u, u * .7), { wash: c, washOp: 250, ink: null });
     if (hatK === 1) { paint([[x - 2.6 * u, y - 6 * u - b], [x - 2.2 * u, y - 8.6 * u - b], [x + 2.2 * u, y - 8.6 * u - b], [x + 2.6 * u, y - 6 * u - b]], { wash: c, ink: null }); paint(ellPts(x, y - 6.1 * u - b, 4.4 * u, .6 * u, 16), { wash: c, ink: null }); }
@@ -669,7 +673,7 @@
       draw: (s2, sw2) => { paint(ellPts(1.4 * s2, -9.9 * s2, .55 * s2, .32 * s2, 12), { fill: '#3F3A48', fillOp: 110 * (1 - seg(t, 106, 108)), bleed: .2, ink: null }); } });
     if (t < 107.2) for (let i = 0; i < 3; i++) { const ph = frac((t - 105.4) * .8 + i / 3), y0 = rY - 14.3 * s - ph * 120; inkLine([[rX - 10 + i * 12, y0 + 40], [rX + Math.sin(ph * 6 + i) * 14, y0 + 20], [rX - 6 + Math.sin(ph * 6 + i + 2) * 14, y0]], .8, '#9AA3B8', 'inkfine', .6); }
     // notes drift up from the bell and the mic
-    const bell = (() => { const lx = 9.05 * u, ly = (-3.45 + cdy) * u, c = Math.cos(crot), sn = Math.sin(crot); return [cX + lx * c - ly * sn, cY + lx * sn + ly * c]; })();
+    const bell = (window.whaleCheck?.active && window.whaleCheck.anchors?.bell) || (() => { const lx = 9.05 * u, ly = (-3.45 + cdy) * u, c = Math.cos(crot), sn = Math.sin(crot); return [cX + lx * c - ly * sn, cY + lx * sn + ly * c]; })();
     const NC = [PAL.cream, '#F6C35A', PAL.sky, PAL.rose];
     for (let n = 155; n <= 160; n++) for (const [src, off] of [[bell, 0], [[1232, 560], .5]]) {
       const age = t - bt(n) - off * BEAT; if (age < 0 || age > 2.6 || (off && n % 2)) continue;

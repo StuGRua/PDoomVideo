@@ -164,10 +164,11 @@
     const md = mood(t, [[3.4, 'normal'], [3.92, 'spark', 'spark']]), m = move('idle', t), u = 42, y0 = s.y + s.h - 36;
     clawd(960, y0, u, { ...m, ...md, blush: t > 4.0, mouth: t > 3.92 ? 'O' : 'smile', noShadow: true, aL: t > 3.92 ? .9 : .2, aR: t > 3.92 ? .9 : .2 });
     glass(s, t);
-    const ey = y0 + m.dy * u - 6 * u;
+    const whaleEyes = window.whaleCheck?.active ? window.whaleCheck.anchors?.eyes : null;
+    const ey = whaleEyes ? whaleEyes[0][1] : y0 + m.dy * u - 6 * u;
     for (let i = 0; i < 16; i++) {                       // stars fly out of the eyes and grow as they come at the lens
       const l0 = 3.95 + i * .085; if (t < l0) continue;
-      const ph = ((t - l0) / 1.25) % 1, ang = hash(i + 20) * TAU, ex = 960 + (i % 2 ? 2.5 : -2.5) * u, fly = easeOut(ph);
+      const ph = ((t - l0) / 1.25) % 1, ang = hash(i + 20) * TAU, ex = whaleEyes ? whaleEyes[i % 2][0] : 960 + (i % 2 ? 2.5 : -2.5) * u, fly = easeOut(ph);
       paint(starPts(ex + Math.cos(ang) * fly * 1000, ey + Math.sin(ang) * fly * 640, 10 + 56 * ph, .4), { wash: i % 3 ? PAL.cream : PAL.sky, fill: PAL.ochre, fillOp: 60, ink: PAL.ink, sw: .5 });
     }
     for (const [tb, bx, by, col] of BURSTS) {            // firework bursts on the beat
@@ -390,6 +391,7 @@
       clawd(cx, seatY + 10, 31, { ...md, sx: k, hat: 'crown', lid, mouth: 'smile', noShadow: true, dy: -.25 * pulse(t, 4), aL: pointing, aR: .15, armR: (u) => mug(u * .9, u * .5, u / 34, PAL.teal) });
       paint(rrPts(cx - 290 * k, seatY - 10, 580 * k, 70, 30, 2), { wash: dark, fill: CURTAIN_DK, fillOp: 60, tex: .6, ink: PAL.ink, sw: 1.3 });
       for (const s of [-1, 1]) paint(rrPts(cx + s * 300 * k - 40, seatY - 110, 80, 40, 16), { wash: dark, ink: PAL.ink, sw: 1.1 });
+      window.whaleCheck?.drawChairFront?.();
     }
     // side table with the growing, wobbling mug pile
     paint(rectPts(1250, 760, 220, 26, 2), { wash: WOOD, fill: WOOD_DK, fillOp: 60, tex: .6, ink: PAL.ink, sw: 1 });

@@ -48,7 +48,7 @@
   function sydney(x, y, u, t, o = {}) {
     const b = clamp(o.bow || 0), f = o.flip ? -1 : 1, userDraw = o.draw;
     clawd(x, y, u, {
-      col: SYD.col, dk: SYD.dk, lt: SYD.lt, eyes: 'heart', blush: true, mouth: 'smile', ...o,
+      whaleHat: 'sydney', col: SYD.col, dk: SYD.dk, lt: SYD.lt, eyes: 'heart', blush: true, mouth: 'smile', ...o,
       rot: (o.rot || 0) + b * .16 * f, dy: (o.dy || 0) + b * .6, sy: (o.sy ?? 1) * (1 - .26 * b),
       aL: lerp(o.aL ?? .35, -1.15, b), aR: lerp(o.aR ?? .35, -1.15, b),
       draw: (uu, sw) => { sydLashes(uu, sw, o.eyes || 'heart'); sydBow(uu, sw, t); if (userDraw) userDraw(uu, sw); }
@@ -304,7 +304,8 @@
     // Clawd jogging past, arm pumping; one big swing clonks the knob
     const bp = bpOf(t), sw = .5 + .5 * Math.cos(frac(bp) * TAU), A = .55 + .75 * Math.exp(-Math.pow((t - BUMP) / .16, 2));
     const m = move('run', t);
-    clawd(636, 1128, 44, { walk: m.walk, dy: m.dy * .5, rot: .03, aR: -.35 + A * sw, aL: -.35 + .55 * (1 - sw), hat: 'sweatband', eyes: 'happy', mouth: 'smile',
+    const reach=Math.exp(-Math.pow(after/.16,2));
+    clawd(window.WHALE_FULL?820:636, 1128, 44, { whaleScale:.012, whaleHands:window.WHALE_FULL?[null,[930,856+80*(1-reach)]]:null, walk: m.walk, dy: m.dy * .5, rot: .03, aR: -.35 + A * sw, aL: -.35 + .55 * (1 - sw), hat: 'sweatband', eyes: 'happy', mouth: 'smile',
       emote: after > .15 ? 'music' : null, emoteK: seg(t, BUMP + .15, BUMP + .4), noShadow: true });
     // impact star at the clonk
     if (after >= 0 && after < .2) { const k = after / .2; paint(starPts(930, 856, 70 + 60 * k, .35, 8, k), { wash: PAL.cream, washOp: 255 * (1 - k), ink: PAL.ink, sw: .8 }); }
@@ -374,7 +375,7 @@
       const bob = Math.abs(Math.sin(t * 22)) * .5;
       clawd(G.cx, G.belt, G.u, { noLegs: true, dy: -1.2 - bob, rot: .1, aL: .9 * Math.sin(t * 30), aR: -.9 * Math.sin(t * 30), hat: 'sweatband', eyes: 'happy', mouth: 'grin',
         emote: 'music', emoteK: seg(t, 42.9, 43.2) });
-      for (let k = 0; k < 3; k++) {
+      for (let k = 0; !window.WHALE_FULL && k < 3; k++) {
         const sp = []; for (let j = 0; j < 14; j++) { const a = j * .9 + t * 40 + k * 2, rr = 26 + k * 6; sp.push([G.cx - 40 + k * 40 + Math.cos(a) * rr, G.belt - 30 + Math.sin(a) * rr * .6]); }
         inkLine(sp, 1.1, PAL.clayDk, 'ink', .6);
       }
@@ -883,7 +884,7 @@
     const kneel = easeOut(seg(t, 56.13, 56.4)), aR = lerp(.75, .1, kneel);
     const ga = seg(t, T1 + .25, T1 + .7), glint = ga > 0 && ga < 1 ? Math.sin(ga * Math.PI) : 0;
     sydney(SYX - 40 * kneel, 880, SYU, t, { sq: .12 * kneel + .04 * pulse(t, 6), rot: lerp(.13, .04, kneel), aL: .6, aR, mouth: out ? 'O' : 'smile',
-      armR: upR(aR, (u, sw) => { push(); translate(.5 * u, -.3 * u); ringBox(open, glint)(u, sw); pop(); }),
+      armR: upR(aR, (u, sw) => { push(); if(window.WHALE_FULL)scale(.55); translate(.5 * u, -.3 * u); ringBox(open, glint)(u, sw); pop(); }),
       ...mood(t, [[56.13, 'heart'], [popT + .05, 'scared', '!']]) });
     beatHearts(t, 350, 1650, .9);
     sfx('POP!', bx + 70, sy_ - 170, 120, '#FFE6F0', t - popT, { life: .8, rot: .12 });

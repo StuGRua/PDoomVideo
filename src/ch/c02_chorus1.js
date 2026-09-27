@@ -14,6 +14,7 @@
 
   // Cheap Clawd for small background dancers: same silhouette/face/hats, flat washes instead of watercolour fills.
   function miniClawd(x, y, u, o = {}) {
+    if(window.WHALE_FULL)return window.whaleFull.draw(x,y,u,o);
     const dy = (o.dy || 0) * u, sq = (o.sq || 0) + (o.take || 0), sw = clamp(u / 15, .45, 2.4), J = u * .07;
     const col = o.col || PAL.clay, dk = o.dk || PAL.clayDk;
     if (!o.noShadow) paint(ellPts(x, y + u * .15, u * 5.4, u * .95, 10), { wash: PAL.ink, washOp: 55, ink: null });
@@ -379,7 +380,7 @@
     rocketBody(ign ? 1 + .3 * Math.sin(t * 40) : (antic > .3 ? .2 * antic : 0));
     const md = mood(t, [[24.5, 'spark'], [25.12, 'scared', '!']]);
     clawd(0, -52, 18, {
-      ...md, emote: null, noShadow: true, draw: strap, blush: !ign,
+      ...md, emote: null, noShadow: true, whaleStrap:true, draw: strap, blush: !ign,
       aL: ign ? 1.4 + Math.sin(t * 30) * .2 : (md.eyes === 'spark' ? 1.1 + .4 * Math.sin(t * 12) : -.25), aR: ign ? 1.4 - Math.sin(t * 30) * .2 : (md.eyes === 'spark' ? 1.1 - .4 * Math.sin(t * 12) : -.25),
       mouth: md.eyes === 'spark' ? 'grin' : 'O', sq: ign ? .12 : 0
     });
@@ -578,7 +579,7 @@
     if (t >= T_JUMP && t < T_YANK) { const k = seg(t, T_JUMP, T_YANK); cx = lerp(CLX, SHX - 150, easeOut(k)); cy = lerp(CLY, grabY, easeOut(k)); sq = -.18; rot = .3 * k; }
     else if (t >= T_YANK && t < T_LAND) { const k = seg(t, T_YANK, T_LAND); cx = lerp(SHX - 150, CLX - 60, k); cy = lerp(grabY, CLY, k * k) - Math.sin(k * Math.PI) * 70; rot = .3 - k * .3 - Math.sin(k * Math.PI) * .6; sq = -.1; }
     else if (t >= T_LAND) { cx = CLX - 60; sq = .3 * Math.exp(-(t - T_LAND) * 12); }
-    const eyeW = [cx + 2.5 * CLU, cy - 6 * CLU];
+    const eyeW = window.WHALE_FULL ? window.whaleFull.pose(cx,cy,CLU).world(529,403) : [cx + 2.5 * CLU, cy - 6 * CLU];
     // camera: tight on the smiley → pull back → hold, drifting → push into Clawd's eye
     const W0 = [935, 650, 1.28];
     let cam;
@@ -611,7 +612,7 @@
     });
     // the yanked mask, held up in the left hand like a trophy
     if (holding) {
-      const tipX = cx - 4.9 * CLU - 2.2 * CLU * Math.cos(aL), tipY = cy + cdy * CLU - 4.5 * CLU - 2.2 * CLU * Math.sin(aL);
+      const [tipX,tipY] = window.WHALE_FULL ? window.whaleFull.last.anchors.hands[0] : [cx - 4.9 * CLU - 2.2 * CLU * Math.cos(aL), cy + cdy * CLU - 4.5 * CLU - 2.2 * CLU * Math.sin(aL)];
       const mr = 2.75 * SHS * .62, mx = tipX - Math.cos(aL) * mr * .9 - 14, my = tipY - Math.sin(aL) * mr * .95;
       smiley(mx, my, mr, -.35 + .12 * Math.sin(t * 5));
       if (t < T_YANK + .3) { const a = 1 - seg(t, T_YANK, T_YANK + .3); for (let i = 0; i < 4; i++) inkLine([[mx + mr + 20 + i * 8, my - 50 + i * 34], [mx + mr + 20 + 260 * a + i * 8, my - 50 + i * 34 + 60 * a]], 1.2, PAL.ink, 'ink', 0); }
@@ -662,10 +663,12 @@
       const u = 62, x = 960, y = 842;
       clawd(x, y, u, { eyes: 'red', noShadow: true, col: '#2C1620', dk: '#170A10', lt: '#4A2A38', mouth: null, sq: -.05 * flare, dy: -flare * .2, draw: rim });
       for (const ex of [-2.5, 2.5]) {
-        const ecx = x + ex * u, ecy = y - 6 * u - flare * .2 * u;
+        const [ecx,ecy] = window.WHALE_FULL ? window.whaleFull.last.anchors.eyes[ex<0?0:1] : [x + ex * u,y - 6 * u - flare * .2 * u];
         paint(ellPts(ecx, ecy, u * (1.3 + 2.2 * flare), u * (1.3 + 2.2 * flare), 14), { wash: '#FF3048', washOp: 50 + 90 * flare, ink: null, curv: .5 });
-        paint(rectPts(ecx - .5 * u, ecy - u, u, 2 * u, u * .05), { wash: '#FF4A60', ink: PAL.ink, sw: 1.2 });
-        paint(rectPts(ecx - .3 * u, ecy - .8 * u, .6 * u, 1.6 * u), { wash: '#FFD0D6', washOp: 150 + 100 * flare, ink: null });
+        if(!window.WHALE_FULL){
+          paint(rectPts(ecx - .5 * u, ecy - u, u, 2 * u, u * .05), { wash: '#FF4A60', ink: PAL.ink, sw: 1.2 });
+          paint(rectPts(ecx - .3 * u, ecy - .8 * u, .6 * u, 1.6 * u), { wash: '#FFD0D6', washOp: 150 + 100 * flare, ink: null });
+        }
         if (flare > .05) paint(starPts(ecx, ecy, u * 3.2 * flare * (1 + .1 * Math.sin(t * 30)), .1, 4, .3), { wash: '#FFE3E6', ink: null });
       }
     }

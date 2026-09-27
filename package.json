@@ -3,15 +3,28 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "render": "node render_whale.cjs --annotated",
+    "render:plain": "node render_whale.cjs",
+    "covers": "node tools/covers/render-cover-formats.cjs",
+    "test": "node tools/check-public.cjs",
+    "test:localization": "node render_whale.cjs --check-localization",
+    "test:annotations": "node render_whale.cjs --annotated --check-annotations",
+    "test:character": "node render_whale.cjs --verify",
+    "benchmark": "node render_whale.cjs --annotated --benchmark"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "鲸鱼娘音乐动画：中英双语逐词字幕、中文典故注释与独立封面工具",
   "dependencies": {
     "p5": "^2.3.3",
     "p5.brush": "^2.2.3",
-    "puppeteer-core": "^25.11.0"
+    "playwright": "1.62.1",
+    "puppeteer-core": "^25.11.0",
+    "sharp": "0.35.4"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=22"
   }
 }

@@ -116,6 +116,7 @@
       P.aL = lerp(o.aL ?? .2, 1.05, bow); P.aR = lerp(o.aR ?? .2, -1.0, bow);
       if (bow > .35 && !o.eyes) P.eyes = 'happy';
     }
+    if(window.WHALE_FULL)return clawd(x,y,s,{...P,whaleHat:ears>.2?'cat':null});
     gatoTail(x, y, s, t, P, ears);
     clawd(x, y, s, { ...P, draw: (u, sw) => { gatoEars(u, sw, ears, o.perk || 0, bow); if (o.draw) o.draw(u, sw); } });
   }
@@ -826,7 +827,9 @@
     const holding = t >= CATCH - .06 && t < POUNCE + .02;
     if (t >= STOP) {
       gato(cx5, cy5, CU, t, { ...co, ears });
-      if (holding && G) {
+      if (holding && G && window.WHALE_FULL) {
+        window.whaleFull.rescue(window.whaleFull.last.anchors.hands[1],G,slipAt(t),t);
+      } else if (holding && G) {
         const sh = cPt(cx5, cy5, CU, co, 4.7, -4.6), reach = seg(t, CATCH - .12, CATCH), g = [lerp(sh[0] + 10, G[0], reach), lerp(sh[1] + 10, G[1] - 6, reach)];
         const mid = [(sh[0] + g[0]) / 2 + 26, (sh[1] + g[1]) / 2 - 8];
         paint(tube(spline([sh, mid, g], 4), CU * 1.05, CU * .95), { wash: PAL.clay, fill: PAL.clayDk, fillOp: 50, tex: .5, ink: INK, sw: .75 });

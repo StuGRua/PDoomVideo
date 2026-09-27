@@ -1,3 +1,6 @@
 node_modules/
 out/
+.env
+.env.*
+*.log
 assets/source.mp4
